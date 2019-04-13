@@ -61,9 +61,7 @@ database.ref().on("child_added", function (childSnapshot) {
    var distanceFromOrigTime = moment().diff(moment(firsTrainTimeConverted), "minutes");
    var timeRemainder = distanceFromOrigTime % frequency;
    var timeTillNextTrain = frequency - timeRemainder;
-   console.log('***: timeTillNextTrain', timeTillNextTrain);
    var nextArrival = currentTime.add(timeTillNextTrain, "minutes").format("HH:mm");
-   console.log('***: nextArrival', nextArrival);
 
    $('tbody').append(`
       <tr>

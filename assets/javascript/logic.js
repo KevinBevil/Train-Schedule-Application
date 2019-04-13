@@ -13,13 +13,7 @@ firebase.initializeApp(config);
 var database = firebase.database();
 
 
-//  Assigning variables for our new train information
-var trainName = '';
-var trainDestination = '';
-var firstTrainTime = '';
-var frequency;
-var trains = [];
-
+// -----------------------------------------------------------------------------
 // Our click listener for the submit button
 // We will capture the values in our variables and save them to firebase
 $('#submit').on('click', function (event) {
@@ -27,14 +21,15 @@ $('#submit').on('click', function (event) {
    event.preventDefault();
 
    // Assign the user's submitted values into our variables
-   trainName = $('#train-name-input').val().trim();
-   trainDestination = $('#destination-input').val().trim();
-   firstTrainTime = $('#train-time-input').val().trim();
-   frequency = $('#frequency-input').val().trim();
+   var trainName = $('#train-name-input').val().trim();
+   var trainDestination = $('#destination-input').val().trim();
+   var firstTrainTime = $('#train-time-input').val().trim();
+   var frequency = $('#frequency-input').val().trim();
 
    // On 'submit' the form is reset
    $('form')[0].reset('');
 
+   // A temporary object is created to house the new train values
    var newTrain = {
       trainName: trainName,
       trainDestination: trainDestination,
@@ -49,21 +44,32 @@ $('#submit').on('click', function (event) {
 
 // -------------------------------------------------------------------
 
-// database.ref().on("child_added", function(snapshot) {
+// The listener for each child and new child in our database
+database.ref().on("child_added", function (childSnapshot) {
 
-//    // Print the initial data to the console.
-//    console.log(snapshot.val());
+   // Log the value of the various properties
+   var trainName = childSnapshot.val().trainName;
+   var trainDestination = childSnapshot.val().trainDestination;
+   var firstTrainTime = childSnapshot.val().firstTrainTime;
+   var frequency = parseInt(childSnapshot.val().frequency);
 
-//    // Log the value of the various properties
-//    console.log(snapshot.val().trainName);
-//    console.log(snapshot.val().trainDestination);
-//    console.log(snapshot.val().firstTrainTime);
-//    console.log(snapshot.val().frequency);
+   // Doing some time conversions using moment.js in order
+   // to display 'Next Arrival' and 'Minutes Away'
+   var currentTime = moment();
 
-//    console.log(database.ref())
-//    // If any errors are experienced, log them to console.
-//  }, function(errorObject) {
-//    console.log("The read failed: " + errorObject.code);
-//  });
+   var firsTrainTimeConverted = moment(firstTrainTime, "HH:mm").subtract(1, "years");
+   var distanceFromOrigTime = moment().diff(moment(firsTrainTimeConverted), "minutes");
+   var timeRemainder = distanceFromOrigTime % frequency;
+   var timeTillNextTrain = frequency - timeRemainder;
+	console.log('***: timeTillNextTrain', timeTillNextTrain);
+   var nextArrival = currentTime.add(timeTillNextTrain, "minutes").format("HH:mm");
+	console.log('***: nextArrival', nextArrival);
+
+   
+
+   // If any errors are experienced, log them to console.
+}, function (errorObject) {
+   console.log("The read failed: " + errorObject.code);
+});
 
 

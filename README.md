@@ -4,6 +4,9 @@ This train schedule web application utilizes Firebase and Moment.js to display a
 
 Built With
 Bootstrap - The web framework used
+
 Firebase - Database as Service
+
 JQuery - Library utilized in DOM manipulation
+
 Moment.js - Time parsing
